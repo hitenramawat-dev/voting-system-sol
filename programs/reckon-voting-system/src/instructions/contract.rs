@@ -1,7 +1,6 @@
-use anchor_lang::{Bumps, prelude::*};
+use anchor_lang::prelude::*;
 
 use crate::state::GlobalState;
-
 
 
 
@@ -26,9 +25,11 @@ pub struct Global<'info> {
 }
 
 
+
+
 impl<'info>  Global<'info> {
     
-    pub fn init_contract(&mut self,bumps:GlobalBumps) -> Result<()> {
+    pub fn init_contract(&mut self,bumps:&GlobalBumps) -> Result<()> {
 
         self.info_vault.set_inner(
             GlobalState { 

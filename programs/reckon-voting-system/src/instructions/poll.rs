@@ -1,6 +1,9 @@
 use anchor_lang::prelude::*;
 
-use crate::{error::PollingErrors, state::{GlobalState, Poll, PollData, PollStatus}};
+use crate::{
+    errors::PollingErrors,
+    state::{GlobalState, Poll, PollData, PollStatus},
+};
 
 #[derive(Accounts)]
 pub struct CreatePoll<'info> {
@@ -30,9 +33,20 @@ impl CreatePoll<'_> {
     pub fn create_poll(
         &mut self,
         poll_creator_data: PollData,
-        bumps: CreatePollBumps,
+        bumps: &CreatePollBumps,
     ) -> Result<()> {
+        let clock = Clock::get()?;
+        let current_time = clock.unix_timestamp;
 
+        require!(
+            poll_creator_data.start_time >= current_time,
+            PollingErrors::StartTimeInPast
+        );
+
+        require!(
+            poll_creator_data.end_time > current_time,
+            PollingErrors::EndTimeInPast
+        );
 
         require!(
             poll_creator_data.options.len() >= 2,
@@ -44,15 +58,28 @@ impl CreatePoll<'_> {
             PollingErrors::InvalidTimeRange
         );
 
-
         require!(
             !poll_creator_data.title.is_empty(),
             PollingErrors::EmptyTitle
         );
 
+        require!(
+            !poll_creator_data.description.is_empty(),
+            PollingErrors::EmptyDescription
+        );
+
+
+        require!(
+            poll_creator_data.options.iter().all(|opt| !opt.name.is_empty()),
+            PollingErrors::EmptyOptionName
+        );
+
+        require!(
+            self.global.active_poll_addresses.len() < 1000, // or whatever your max_len is
+            PollingErrors::TooManyActivePolls
+        );
 
         let poll_id = self.global.total_polls_created;
-
 
         self.poll_pda.set_inner(Poll {
             poll_id: poll_id,
@@ -69,6 +96,12 @@ impl CreatePoll<'_> {
 
         self.global.total_polls_created += 1;
         self.global.active_poll_count += 1;
+
+        require!(
+            self.global.active_poll_addresses.len() < 1000, // or whatever your max_len is
+            PollingErrors::TooManyActivePolls
+        );
+
         self.global.active_poll_addresses.push(self.poll_pda.key());
 
         Ok(())

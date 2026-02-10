@@ -12,7 +12,7 @@ reckon_voting_system = "A3TBFpv3KRKpSHowtstALX7PFPWQ1Kthp2wnHjgtuExP"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

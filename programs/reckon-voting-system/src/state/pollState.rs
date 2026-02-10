@@ -41,6 +41,7 @@ pub struct Poll {
 
 
 
+#[derive(AnchorDeserialize,AnchorSerialize)]
 pub struct PollData {                                 
     //#[max_len(25)]
     pub title: String,                   

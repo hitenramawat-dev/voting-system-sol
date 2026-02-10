@@ -3,7 +3,6 @@ use anchor_lang::prelude::*;
 
 
 
-
 #[error_code]
 pub enum PollingErrors {
     #[msg("voting optins needs to be atleast two")]
@@ -29,5 +28,24 @@ pub enum PollingErrors {
 
 
     #[msg("Voting has closed")]
-    VotingEnded
+    VotingEnded,
+
+    #[msg("wrong starting time")]
+    StartTimeInPast,
+
+
+    #[msg("wrong starting time")]
+    EndTimeInPast,
+
+
+    #[msg("wrong starting time")]
+    EmptyDescription,
+
+    #[msg("option can't be empty string")]
+    EmptyOptionName,
+
+
+    #[msg("too many polls are active rightnow")]
+    TooManyActivePolls
+
 }

@@ -1,9 +1,5 @@
 use anchor_lang::prelude::*;
-
-use crate::{error::PollingErrors, state::{Poll, PollStatus, VoteReceipt}};
-
-
-
+use crate::{errors::PollingErrors, state::{Poll, PollStatus, VoteReceipt}};
 
 
 
@@ -42,7 +38,7 @@ pub struct Voter<'info>{
 
 impl Voter<'_> {
     
-    pub fn vote(&mut self,poll_id:u64,option_index: u8,bumps:VoterBumps) -> Result<()> {
+    pub fn vote(&mut self,poll_id:u64,option_index: u8,bumps:&VoterBumps) -> Result<()> {
 
 
         require!(
